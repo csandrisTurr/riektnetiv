@@ -1,39 +1,25 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Stack, useNavigation } from "expo-router";
+import { Gabarito_400Regular, useFonts } from '@expo-google-fonts/gabarito';
+import { Inter_400Regular } from '@expo-google-fonts/inter';
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { useEffect } from "react";
+import { UserProvider } from "@/contexts/user";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const [fontsLoaded] = useFonts({ Gabarito_400Regular, Inter_400Regular });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+  if (fontsLoaded) {
+    return (
+      <>
+        <UserProvider>
+          <Stack screenOptions={{ headerShown: false }} />
+        </UserProvider>
+      </>
+    );
+  } else return <ScrollView contentContainerStyle={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
+      <ActivityIndicator size={'large'} />
+    </View>
+  </ScrollView>;
 }
